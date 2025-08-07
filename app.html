@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Tarefas</title>
+    <!-- Importando o Tailwind CSS para estilização -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Estilo para a animação de entrada das tarefas */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+
+    <!-- Container principal do aplicativo -->
+    <div class="container mx-auto max-w-2xl mt-10 md:mt-20 p-6 bg-white rounded-xl shadow-lg">
+
+        <!-- Cabeçalho -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-800">Minha Lista de Tarefas</h1>
+            <p class="text-gray-500 mt-2">Organize seu dia e aumente sua produtividade.</p>
+        </header>
+
+        <!-- Formulário para adicionar novas tarefas -->
+        <form id="task-form" class="flex flex-col sm:flex-row gap-3 mb-8">
+            <input 
+                type="text" 
+                id="task-input"
+                placeholder="Adicionar uma nova tarefa..."
+                class="flex-grow p-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors"
+            >
+            <button 
+                type="submit"
+                class="bg-blue-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-600 transition-colors shadow focus:outline-none"
+            >
+                Adicionar
+            </button>
+        </form>
+
+        <!-- Lista onde as tarefas serão exibidas -->
+        <div id="task-list-container">
+            <h2 class="text-2xl font-semibold text-gray-700 border-b-2 pb-2 mb-4">Tarefas</h2>
+            <ul id="task-list" class="space-y-3">
+                <!-- As tarefas serão inseridas aqui via JavaScript -->
+                <li class="text-gray-400 text-center py-4" id="empty-message">Nenhuma tarefa ainda.</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <script>
+        // --- SELEÇÃO DOS ELEMENTOS DO DOM ---
+        const taskForm = document.getElementById('task-form');
+        const taskInput = document.getElementById('task-input');
+        const taskList = document.getElementById('task-list');
+        const emptyMessage = document.getElementById('empty-message');
+
+        // --- FUNÇÕES ---
+
+        /**
+         * Cria e adiciona uma nova tarefa à lista.
+         * @param {string} taskText - O texto da tarefa a ser adicionada.
+         */
+        function addTask(taskText) {
+            // Se a mensagem de "lista vazia" estiver visível, remove-a.
+            if (emptyMessage) {
+                emptyMessage.remove();
+            }
+
+            // 1. Cria o elemento <li> que conterá a tarefa
+            const listItem = document.createElement('li');
+            listItem.className = 'flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm fade-in';
+
+            // 2. Cria o <span> para o texto da tarefa
+            const textSpan = document.createElement('span');
+            textSpan.textContent = taskText;
+            textSpan.className = 'text-gray-800';
+
+            // 3. Cria o botão de "Excluir"
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Excluir';
+            deleteButton.className = 'bg-red-500 text-white text-sm font-semibold py-1 px-3 rounded-md hover:bg-red-600 transition-colors';
+
+            // 4. Adiciona um evento de clique ao botão de "Excluir"
+            deleteButton.addEventListener('click', function() {
+                // Remove o elemento pai (o <li>) da lista
+                taskList.removeChild(listItem);
+
+                // Verifica se a lista ficou vazia para mostrar a mensagem novamente
+                if (taskList.children.length === 0) {
+                    const newEmptyMessage = document.createElement('li');
+                    newEmptyMessage.id = 'empty-message';
+                    newEmptyMessage.className = 'text-gray-400 text-center py-4';
+                    newEmptyMessage.textContent = 'Nenhuma tarefa ainda.';
+                    taskList.appendChild(newEmptyMessage);
+                }
+            });
+
+            // 5. Adiciona o texto e o botão ao elemento <li>
+            listItem.appendChild(textSpan);
+            listItem.appendChild(deleteButton);
+
+            // 6. Adiciona a nova tarefa (<li>) à lista (<ul>)
+            taskList.appendChild(listItem);
+        }
+
+        // --- EVENT LISTENERS ---
+
+        // Adiciona um evento ao formulário para quando ele for enviado
+        taskForm.addEventListener('submit', function(event) {
+            // Previne o comportamento padrão do formulário (que é recarregar a página)
+            event.preventDefault();
+
+            // Pega o texto do campo de input, removendo espaços em branco do início e do fim
+            const taskText = taskInput.value.trim();
+
+            // Verifica se o campo de input não está vazio
+            if (taskText !== '') {
+                // Chama a função para adicionar a tarefa na lista
+                addTask(taskText);
+
+                // Limpa o campo de input
+                taskInput.value = '';
+
+                // Devolve o foco para o campo de input para facilitar a adição de novas tarefas
+                taskInput.focus();
+            }
+        });
+
+    </script>
+
+</body>
+</html>
